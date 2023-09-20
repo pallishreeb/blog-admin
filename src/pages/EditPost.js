@@ -5,6 +5,8 @@ import { AddNav, ImageUpload, FirstStep, SecondStep } from "../components";
 import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth/AuthProvider";
 import { PostContext } from "../context/PostProvider";
+import FormLoading from "../components/cards/FormLoading"
+
 function EditPost() {
   const params = useParams();
   const { id } = params;
@@ -15,63 +17,30 @@ function EditPost() {
   const postContext = useContext(PostContext);
   const {
     getSinglePost,
-    successMsg,
-    errorMsg,
-    setErrorMsg,
-    post,
     updatePost,
-    setSuccessMsg,
     loading,
+    editForm, setEditForm, imgs, setImgs, selectedImages,
+    setSelectedImages
   } = postContext;
   useEffect(() => {
     !isAuthenticated && navigate("/login");
   }, [isAuthenticated, token]);
   const [value, setValue] = useState(0);
-  const [imgs, setImgs] = useState([]);
-  const [form, setForm] = useState({
-    _id: "",
-    title: "",
-    text: "",
-    brand: "",
-    model: "",
-    websitesLink: "",
-    youtubeLink: "",
-    category: {},
-    subcategory: {},
-  });
-  useEffect(() => {
-    // console.log(post);
 
-    if (post?._id !== id) {
-      getSinglePost(id, token);
-    } else {
-      setForm({
-        _id: post._id,
-        title: post?.title,
-        text: post?.text,
-        brand: post?.brand || "",
-        model: post?.model || "",
-        websitesLink: post?.websitesLink || "",
-        youtubeLink: post?.youtubeLink || "",
-        categoryId: post?.category._id,
-        subcategoryId: post?.subcategory._id,
-        category: post?.category,
-        subcategory: post?.subcategory,
-      });
-    }
-  }, [id, token, post, successMsg]);
   useEffect(() => {
-    if (successMsg) {
-      setForm({});
-      setImgs([]);
-      setSuccessMsg("");
-      navigate("/posts");
+    if (id) {
+      getSinglePost(id, token);
     }
-  }, [successMsg]);
+  }, [id]);
+
 
   const handleUpdate = () => {
-    updatePost(form, imgs, token);
+    updatePost(editForm, imgs, token, navigate);
   };
+  if (loading) {
+    return <FormLoading />;
+  }
+
   return (
     <div className="container-fluid  pt-3   panel">
       <div
@@ -99,14 +68,15 @@ function EditPost() {
             </div>
             <div className="card-body overflow-auto">
               <FirstStep
-                setForm={setForm}
-                form={form}
+                setForm={setEditForm}
+                form={editForm}
                 token={token}
                 value={value}
               />
-              <SecondStep setForm={setForm} form={form} value={value} />
+              <SecondStep setForm={setEditForm} form={editForm} value={value} />
               <ImageUpload
-                successMsg={successMsg}
+                selectedImages={selectedImages}
+                setSelectedImages={setSelectedImages}
                 imgs={imgs}
                 setImgs={setImgs}
                 value={value}

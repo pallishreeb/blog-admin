@@ -1,57 +1,49 @@
 /** @format */
 
 import React, { useState, useEffect, useContext } from "react";
-// import { Snackbar, Alert } from "@mui/material";
 import { AddNav, ImageUpload, FirstStep, SecondStep } from "../components";
 import { AuthContext } from "../context/auth/AuthProvider";
 import { PostContext } from "../context/PostProvider";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 function AddPost() {
   const navigate = useNavigate();
-
   const authContext = useContext(AuthContext);
   const { isAuthenticated, token } = authContext;
   const postContext = useContext(PostContext);
   const {
     submitPost,
-    successMsg,
-    errorMsg,
-    setErrorMsg,
-    setSuccessMsg,
     loading,
+    form, setForm, imgs, setImgs, selectedImages,
+    setSelectedImages
   } = postContext;
   useEffect(() => {
     !isAuthenticated && navigate("/login");
   }, [isAuthenticated, token]);
+  ;
 
   const [value, setValue] = useState(0);
-  const [form, setForm] = useState({});
-  const [imgs, setImgs] = useState([]);
   const prevStep = () => {
     if (value === 1 || value === 2) {
       setValue(value - 1);
     }
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    submitPost(form, imgs, token);
-  };
-
-  useEffect(() => {
-    if (successMsg) {
-      setForm({});
-      setImgs([]);
-      setSuccessMsg("");
-      navigate("/posts");
+    if (imgs?.length === 0) {
+      toast.warning("Atleast One Image Is Required");
+      return;
     }
-  }, [successMsg]);
+    submitPost(form, imgs, token, navigate);
+  };
 
   const nextStep = () => {
     if (value === 0) {
       if (form?.title && form?.categoryId && form?.text) {
         setValue(value + 1);
       } else {
-        alert("Please fill all the fields with * mark");
+        toast.warning("Please fill all the fields with * mark");
       }
     } else if (value === 1) {
       setValue(value + 1);
@@ -60,18 +52,6 @@ function AddPost() {
 
   return (
     <div className="container-fluid  pt-3   panel">
-      {/* {
-        successMsg && <Snackbar anchorOrigin={{
-          vertical: "top",
-          horizontal: "right"
-        }}
-          open={"open"} autoHideDuration={6000} onClose={() => setSuccessMsg("")}>
-          <Alert severity="error" onClose={() => setSuccessMsg("")}>
-            {successMsg}
-          </Alert>
-        </Snackbar> 
-    } */}
-
       <div
         className="row mt-3"
         style={{
@@ -117,7 +97,8 @@ function AddPost() {
                 imgs={imgs}
                 token={token}
                 value={value}
-                successMsg={successMsg}
+                selectedImages={selectedImages}
+                setSelectedImages={setSelectedImages}
               />
               <div
                 className="p-3"
@@ -151,7 +132,7 @@ function AddPost() {
                     className="btn btn-secondary"
                     onClick={(e) => handleSubmit(e)}
                   >
-                    {loading ? "Proccessing" : "Submit"}
+                    {loading === true ? "Proccessing" : "Submit"}
                   </button>
                 )}
               </div>

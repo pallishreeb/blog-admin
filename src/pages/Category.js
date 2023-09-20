@@ -1,11 +1,11 @@
-import React ,{useContext,useEffect}from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Add } from '@mui/icons-material';
-import { CategoryTable,SubCategoryTable } from '../components';
+import { CategoryTable, SubCategoryTable } from '../components';
 import FormModal from '../components/cards/Modal';
 import { useNavigate } from "react-router-dom"
 import { AuthContext } from '../context/auth/AuthProvider';
-import {CategoryContext} from "../context/CategoryProvider"
-import { getAllSubCategories } from '../apis/category';
+import { CategoryContext } from "../context/CategoryProvider"
+
 const Category = () => {
     const navigate = useNavigate();
     const authContext = useContext(AuthContext);
@@ -22,18 +22,19 @@ const Category = () => {
         setSubcategory,
         subcategory,
         setCategories,
-        setSubcategories
-     } = categoryContext
+        setSubcategories,
+        loading
+    } = categoryContext
     useEffect(() => {
         !isAuthenticated && navigate("/login")
     }, [isAuthenticated, token])
 
     useEffect(() => {
-       getAllCategories(token)
-       allSubcategores(token)
-       
-    }, [categories?.length,subcategories?.length,category,subcategory])
-    
+        getAllCategories(token)
+        allSubcategores(token)
+
+    }, [categories?.length, subcategories?.length, category, subcategory])
+
 
     const [open, setOpen] = React.useState(false);
     const [name, setName] = React.useState("");
@@ -47,16 +48,14 @@ const Category = () => {
         handleOpen()
 
     }
-    
-    
-    console.log(category, subcategory);    
+
     return (
         <div className='container-fluid mx-2 pt-2  panel' style={{
             position: "relative"
         }} >
             <FormModal open={open} setOpen={setOpen} name={name} token={token}
-             setCategory={setCategory} setSubcategory={setSubcategory} category={category} subcategory={subcategory}
-             />
+                setCategory={setCategory} setSubcategory={setSubcategory} category={category} subcategory={subcategory}
+            />
             <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12">
                     <div className='row mt-4 pt-3' style={{ gap: "3rem", justifyContent: "flex-start", alignItems: "center", background: "#fff", borderRadius: "0.7em !important", marginLeft: "0.2rem", marginRight: "0.7rem" }}>
@@ -67,7 +66,7 @@ const Category = () => {
                                     <Add />
                                     Add Category</button>
                             </div>
-                            <CategoryTable setCategories={setCategories} categories={categories} setCategory={setCategory} setSubcategory={setSubcategory} setOpen={setOpen}  setName={setName} removeCategory={removeCategory} token={token} />
+                            <CategoryTable loading={loading} setCategories={setCategories} categories={categories} setCategory={setCategory} setSubcategory={setSubcategory} setOpen={setOpen} setName={setName} removeCategory={removeCategory} token={token} />
                         </div>
                         <div className="col-md-6 col-lg-5 col-sm-12" style={{ background: "#fff" }} >
                             <div style={{ background: " #ffffff", color: "#525", position: "relative", padding: "5px 15px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.9rem" }}>
@@ -76,9 +75,9 @@ const Category = () => {
                                     <Add />
                                     Add Subcategory</button>
                             </div>
-                            <SubCategoryTable setSubcategories={setSubcategories} subcategories={subcategories} setCategory={setCategory} setSubcategory={setSubcategory} showSubCategoryForm={showSubCategoryForm} setName={setName} SetOpen={setOpen}
-                              removeSubcategory={removeSubcategory} token={token}
-                             />
+                            <SubCategoryTable loading={loading} setSubcategories={setSubcategories} subcategories={subcategories} setCategory={setCategory} setSubcategory={setSubcategory} showSubCategoryForm={showSubCategoryForm} setName={setName} SetOpen={setOpen}
+                                removeSubcategory={removeSubcategory} token={token}
+                            />
                         </div>
                     </div>
                 </div>

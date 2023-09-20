@@ -1,110 +1,111 @@
-import { createContext, useState, useEffect } from "react";
-import { userLogin, getUser, getUsers, removeUser } from '../../apis/user'
+/** @format */
+
+import { createContext, useState, useEffect, useContext } from "react";
+import { toast } from "react-toastify"
+import { userLogin, getUser, getUsers, removeUser } from "../../apis/user";
 
 export const AuthContext = createContext();
 
-const AuthProvider = props => {
-    let authToken = JSON.parse(localStorage.getItem("token"))
-    let userInfo = localStorage.getItem("user")
+const AuthProvider = (props) => {
+    let authToken = JSON.parse(localStorage.getItem("token"));
+    let userInfo = localStorage.getItem("user");
     const initialState = {
         token: authToken || null,
         isAuthenticated: authToken ? true : false,
-        loading: authToken ? true : false,
-
-    }
+        loading: false,
+    };
     const [info, setInfo] = useState(initialState);
     const [user, setUser] = useState(null);
-    const [users, setUsers] = useState([])
+    const [users, setUsers] = useState([]);
     const [error, setError] = useState("");
+    const [userloading, setUserloading] = useState(false);
     useEffect(() => {
-        !info.token &&
-            setInfo(info => ({
-                ...info,
+        authToken &&
+            setInfo((info) => ({
                 token: authToken,
                 isAuthenticated: authToken ? true : false,
                 loading: authToken ? true : false,
-            }))
-    }, [authToken, info.token])
+            }));
+    }, [authToken, info?.token]);
 
     useEffect(() => {
         if (!userInfo) {
             info.token && loadUser();
         } else {
-            setUser(userInfo)
+            setUser(userInfo);
         }
-    }, [user, info.token])
-
-
-
+    }, [user, info.token]);
 
     // Load User
     const loadUser = async () => {
-
         try {
+            const res = await getUser(info.token);
+            console.log("login response", res.data.response);
 
-            const res = await getUser(info.token)
-            console.log("login response", res.data.response)
-
-            const userData = JSON.stringify(res.data.response)
+            const userData = JSON.stringify(res.data.response);
 
             setUser(userData);
-            localStorage.setItem("user", userData)
+            localStorage.setItem("user", userData);
         } catch (error) {
-            console.log(error)
-            setError(error)
+            console.log(error);
+            setError(error);
+            toast.error("Error in Fetching User")
         }
     };
     // Login User
-    const login = async (formData) => {
-
-        try {
-            const res = await userLogin(formData)
+    const login = async (formData, navigate) => {
+        userLogin(formData).then((res) => {
             setInfo({
                 token: res.data.token,
                 isAuthenticated: true,
-                loading: false
-            })
+                loading: false,
+            });
             localStorage.setItem("token", JSON.stringify(res.data.token));
-            info.token && loadUser()
-        } catch (error) {
-            console.log(error)
-            setError(error.response.data.msg);
-
-
-        }
+            info.token && loadUser();
+            navigate("/")
+        }).catch((error) => {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Error in Login")
+            setError(error?.response?.data?.message);
+        })
     };
     // get all users
     const getAllUsers = (token) => {
+        setUserloading(true);
         getUsers(token)
-            .then(res => {
-                //    console.log(res.data.response);
-                setUsers(res.data.response)
+            .then((res) => {
+                setUsers(res.data.response);
+                setUserloading(false);
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
-            })
-
-    }
+                setUserloading(false);
+                toast.error(err?.response?.data?.message || "Error in fetching Users")
+            });
+    };
     // delete a user
     const deleteUser = (id, token) => {
         try {
             removeUser(id, token);
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Error in deleting User")
         }
-
-    }
+    };
     //Logout
     const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-        setInfo(initialState);
+        setInfo({
+            token: null,
+            isAuthenticated: false,
+            loading: false,
+        });
         setUser(null);
         setError("");
     };
     // Clear Errors
     const clearErrors = () => setError("");
-
 
     return (
         <AuthContext.Provider
@@ -121,14 +122,15 @@ const AuthProvider = props => {
                 getAllUsers,
                 users,
                 setUsers,
-                deleteUser
+                deleteUser,
+                userloading
             }}
         >
             {props.children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
 
-export default AuthProvider
+export default AuthProvider;
 
-
+export const AuthApiProvider = () => useContext(AuthContext);

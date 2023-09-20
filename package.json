@@ -1,5 +1,5 @@
 {
-  "name": "react-blog",
+  "name": "blog-admin",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -22,7 +22,6 @@
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
     "react-toastify": "^9.0.8",
-    "recharts": "^2.4.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

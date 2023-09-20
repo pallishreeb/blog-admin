@@ -31,9 +31,9 @@ function DrawerAppBar(props) {
         justifyContent: "space-between",
         padding: "1rem"
       }}>
-        <img src={logo} alt='logo' width={"39px"} height="39px" />
+        {/* <img src={logo} alt='logo' width={"39px"} height="39px" /> */}
         <Typography variant="h6" sx={{ my: 2, color: "tan" }}>
-          Kroztek
+          Crosstech
         </Typography>
         <IconButton sx={{ color: "tan" }}>
         </IconButton>
@@ -70,7 +70,7 @@ function DrawerAppBar(props) {
             alignItems: "center",
             gap: "1rem"
           }}>
-            <img src={logo} alt='logo' width={"39px"} height="39px" />
+            {/* <img src={logo} alt='logo' width={"39px"} height="39px" /> */}
             <Typography
               component="div"
               sx={{
@@ -78,7 +78,7 @@ function DrawerAppBar(props) {
                 fontSize: "2rem"
               }}
             >
-              Kroztek
+              Crosstech
             </Typography>
           </Box>
 

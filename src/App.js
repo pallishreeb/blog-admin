@@ -1,7 +1,9 @@
 import { useContext } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import Home from "./pages/Home"
 import Blogs from "./pages/Blogs"
 import AddPost from "./pages/AddPost"
@@ -33,7 +35,16 @@ function App() {
 
     <div className='bg-light' style={{ height: "100%", width: "100vw" }}>
 
-
+      <ToastContainer position="top-right"
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light" />
       <Router>
 
         <MediaContextProvider>

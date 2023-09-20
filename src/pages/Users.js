@@ -7,17 +7,14 @@ import { useNavigate } from "react-router-dom"
 const Users = () => {
     const navigate = useNavigate();
     const authContext = useContext(AuthContext);
-    const { isAuthenticated, token, getAllUsers, users, setUsers, deleteUser } = authContext;
+    const { isAuthenticated, token, getAllUsers, users, setUsers, deleteUser, userloading } = authContext;
     useEffect(() => {
         !isAuthenticated && navigate("/login")
     }, [isAuthenticated, token])
     useEffect(() => {
         if (users.length === 0) {
             getAllUsers(token)
-
         }
-
-
     }, [users.length, token])
 
     return (
@@ -26,7 +23,7 @@ const Users = () => {
                 <span style={{ fontWeight: "bolder", fontSize: "1.7rem" }}>Users</span>
 
             </div>
-            <UserTable users={users} setUsers={setUsers} token={token} deleteUser={deleteUser} />
+            <UserTable loading={userloading} users={users} setUsers={setUsers} token={token} deleteUser={deleteUser} />
         </div>
     );
 }
